@@ -1,5 +1,3 @@
-package exam.sium1;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
