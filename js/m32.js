@@ -567,12 +567,14 @@ function b(a, b) {
         var d = CryptoJS.enc.Utf8.parse("0102030405060708");
 		    d.sigBytes = 16;
         var e = CryptoJS.enc.Utf8.parse(a);
-			if(zobcot == 0){
+			/*
+            if(zobcot == 0){
 				e.sigBytes = 74;//108
 				zobcot++;
 			}else{
 				e.sigBytes = 108;
 			}
+            */
         var f = CryptoJS.AES.encrypt(e, c, {
             iv: d,
             mode: CryptoJS.mode.CBC
