@@ -986,7 +986,7 @@ function event3() {
             var result = xhrtest.responseText;
             //document.getElementById("tip1").innerHTML=result;
             var json = eval("("+result+")")
-            document.getElementById("tip1").innerHTML=json.data[0].url;
+            document.getElementById("tip1").innerHTML='<a href="'+json.data[0].url+'">'+json.data[0].url+'</a>';//json.data[0].url;
             document.getElementById("a1").src=json.data[0].url;
         }
     }
