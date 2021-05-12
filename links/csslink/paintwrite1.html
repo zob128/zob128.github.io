@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PaintWrite1</title>
+</head>
+<body>
+    <div class="container">
+        <div class="pixel one"></div>
+      </div>
+    <style>
+        body{
+            background-color: chocolate;
+        }
+        .container {
+        /* 像素画的大小 */
+        width: 100px;
+        height: 100px;
+        }
+
+        .pixel {
+        /* 使伪元素的位置可调整 */
+        position: relative;
+        }
+        .pixel::before {
+        content: "";
+
+        /* 一个点的大小(例:20px x 20px) */
+        width: 20px;
+        height: 20px;
+        /* box-shadow 着色，伪元素设为透明 */
+        background-color: transparent;
+
+        /* 调整伪元素位置，让左上角成为(0,0) */
+        position: absolute;
+        top: -20px;
+        left: -20px;
+        }
+
+        .pixel.one::before {
+        box-shadow:
+            /* 列　行 色 */
+            /* 第1列 */
+            20px   20px #FB0600,
+            20px   40px #FC322F,
+            20px   60px #FC6663,
+            20px   80px #FD9999,
+            20px  100px #FECCCB, 
+            /* 第2列 */
+            40px   20px #60169F,
+            40px   40px #7A23B0,
+            40px   60px #964DC2,
+            40px   80px #B681D9,
+            40px  100px #D8BEED, 
+            /* 第3列 */
+            60px   20px #1388BC,
+            60px   40px #269DC9,
+            60px   60px #55B3D7,
+            60px   80px #88CAE2,
+            60px  100px #BFE3EF, 
+            /* 第4列 */
+            80px   20px #ACD902,
+            80px   40px #BDE02D,
+            80px   60px #CDEA5E,
+            80px   80px #DBEF8E,
+            80px  100px #F4FBC8, 
+            /* 第5列 */
+            100px  20px #FB8F02,
+            100px  40px #FDA533,
+            100px  60px #FDBB64,
+            100px  80px #FED39A,
+            100px 100px #FDE8C9;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>PaintBlock</title>
+    <style>
+        body{
+            background-color: burlywood;
+        }
+
+        #output2 {
+          white-space: nowrap;
+        }
+    </style>
+  </head>
+  <body>
+    
+    <input type="file" id="myFile"></input>
+    
+    <input type="button" value="参照链接" onclick="javascript:window.location.href='https://codepen.io/Cloud_Wolf/pen/bGVgBEW'">
+    
+    <canvas id="myCanvas" width="1" height="1" style="border:1px solid #d3d3d3;">
+    Your browser does not support the HTML5 canvas tag.</canvas>
+    <br>
+    <button onclick="getCode(0)">Copy Output</button>
+    <input type="text" value="tellraw>Null" id="output">
+    <br>
+    <button onclick="getCode(1)">Copy Output</button>
+    <input type="text" value="item>Null" id="output1">
+    <br>
+    <button onclick="getCode(2)">Copy Output</button>
+    <textarea id="output2">paintblock>Null</textarea>
+    <br>
+      <label for="width">Width:</label>
+      <input type="number" id="width" name="quantity" min="1" max="1024" value = "16">
+      <label for="height">Height:</label>
+      <input type="number" id="height" name="quantity" min="1" max="1024" value = "16">
+    <br>
+      <img id="myImage" style="border:1px" />
+      <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var image,nw,nh;
+        var rgbR=[
+                [9,11,16],      //minecraft:black_concrete
+                [38,23,16],     //minecraft:black_terracotta
+                [17,18,23],     //minecraft:black_wool
+                [256,256,256],  //minecraft:white_wool
+                [45,47,144],    //minecraft:blue_concrete
+                [75,60,91],     //minecraft:blue_terracotta
+                [51,55,154],    //minecraft:blue_wool
+                [96,59,31],     //minecraft:brown_concrete
+                [151,114,81],   //minecraft:brown_mushroom_block
+                [78,51,36],     //minecraft:brown_terracotta
+                [112,70,40],    //minecraft:brown_wool
+                [168,175,193],  //minecraft:clay
+                [21,119,136],   //minecraft:cyan_concrete
+                [21,135,143],   //minecraft:cyan_wool
+                [87,91,91],     //minecraft:cyan_terracotta
+                [54,57,61],     //minecraft:gray_concrete
+                [58,43,36],     //minecraft:gray_terracotta
+                [61,67,70],     //minecraft:gray_wool
+                [73,91,36],     //minecraft:green_concrete
+                [76,83,43],     //minecraft:green_terracotta
+                [83,106,28],    //minecraft:green_wool
+                [35,137,199],   //minecraft:light_blue_concrete
+                [114,109,138],  //minecraft:light_blue_terracotta
+                [55,173,215],   //minecraft:light_blue_wool
+                [125,125,115],  //minecraft:light_gray_concrete
+                [136,107,98],   //minecraft:light_gray_terracotta
+                [140,140,140],  //minecraft:light_gray_wool
+                [93,168,24],    //minecraft:lime_concrete
+                [103,117,52],   //minecraft:lime_terracotta
+                [109,182,24],   //minecraft:lime_wool
+                [169,48,159],   //minecraft:magenta_concrete
+                [151,89,109],   //minecraft:magenta_terracotta
+                [189,67,178],   //minecraft:magenta_wool
+                [224,91,1],     //minecraft:orange_concrete
+                [162,85,38],    //minecraft:orange_terracotta
+                [238,112,15],   //minecraft:orange_wool
+                [213,101,143],  //minecraft:pink_concrete
+                [162,79,79],    //minecraft:pink_terracotta
+                [242,141,171],  //minecraft:pink_wool
+                [100,32,156],   //minecraft:purple_concrete
+                [120,71,87],    //minecraft:purple_terracotta
+                [116,38,167],   //minecraft:purple_wool
+                [143,33,33],    //minecraft:red_concrete
+                [181,98,32],    //minecraft:smooth_red_sandstone
+                [144,62,47],    //minecraft:red_terracotta
+                [149,34,32],    //minecraft:red_wool
+                [224,214,170],  //minecraft:smooth_sandstone
+                [132,132,132],  //minecraft:stone
+                [152,92,66],    //minecraft:terracotta
+                [207,213,214],  //minecraft:white_concrete
+                [210,179,162],  //minecraft:white_terracotta
+                [241,175,21],   //minecraft:yellow_concrete
+                [186,133,35],   //minecraft:yellow_terracotta
+                [247,193,35],   //minecraft:yellow_wool
+        ];
+        var rgbN=[
+                "minecraft:black_concrete",
+                "minecraft:black_terracotta",
+                "minecraft:black_wool",
+                "minecraft:white_wool",
+                "minecraft:blue_concrete",
+                "minecraft:blue_terracotta",
+                "minecraft:blue_wool",
+                "minecraft:brown_concrete",
+                "minecraft:brown_mushroom_block",
+                "minecraft:brown_terracotta",
+                "minecraft:brown_wool",
+                "minecraft:clay",
+                "minecraft:cyan_concrete",
+                "minecraft:cyan_wool",
+                "minecraft:cyan_terracotta",
+                "minecraft:gray_concrete",
+                "minecraft:gray_terracotta",
+                "minecraft:gray_wool",
+                "minecraft:green_concrete",
+                "minecraft:green_terracotta",
+                "minecraft:green_wool",
+                "minecraft:light_blue_concrete",
+                "minecraft:light_blue_terracotta",
+                "minecraft:light_blue_wool",
+                "minecraft:light_gray_concrete",
+                "minecraft:light_gray_terracotta",
+                "minecraft:light_gray_wool",
+                "minecraft:lime_concrete",
+                "minecraft:lime_terracotta",
+                "minecraft:lime_wool",
+                "minecraft:magenta_concrete",
+                "minecraft:magenta_terracotta",
+                "minecraft:magenta_wool",
+                "minecraft:orange_concrete",
+                "minecraft:orange_terracotta",
+                "minecraft:orange_wool",
+                "minecraft:pink_concrete",
+                "minecraft:pink_terracotta",
+                "minecraft:pink_wool",
+                "minecraft:purple_concrete",
+                "minecraft:purple_terracotta",
+                "minecraft:purple_wool",
+                "minecraft:red_concrete",
+                "minecraft:smooth_red_sandstone",
+                "minecraft:red_terracotta",
+                "minecraft:red_wool",
+                "minecraft:smooth_sandstone",
+                "minecraft:stone",
+                "minecraft:terracotta",
+                "minecraft:white_concrete",
+                "minecraft:white_terracotta",
+                "minecraft:yellow_concrete",
+                "minecraft:yellow_terracotta",
+                "minecraft:yellow_wool",
+        ];
+        document.getElementById("width").onchange = () => getImageData(document.getElementById("myImage"));
+        document.getElementById("height").onchange = () => getImageData(document.getElementById("myImage"));
+        // function ip() {
+        //   console.log(document.getElementById("width").value);
+        //   console.log(document.getElementById("height").value);
+        // }
+        document.getElementById("myFile").onchange = function (evt) {
+            var tgt = evt.target || window.event.srcElement,
+                files = tgt.files;
+            // FileReader support
+            if (FileReader && files && files.length) {
+                var fr = new FileReader();
+                fr.onload = () => showImage(fr);
+                fr.readAsDataURL(files[0]);
+            }
+        }
+        function showImage(fileReader) {
+            var img = document.getElementById("myImage");
+            img.onload = () => getImageData(img);
+            img.src = fileReader.result;
+        }
+        function getImageData(img) {
+            console.log(img);
+            nw = document.getElementById("width").value;
+            nh = document.getElementById("height").value;
+            canvas.width = nw; canvas.height = nh;
+            ctx.scale(nw / img.width ,nh / img.height);
+            ctx.drawImage(img, 0, 0);
+            imageData = ctx.getImageData(0, 0, nw, nh).data;
+            console.log(imageData);
+        }
+  
+        function extract_data() {
+          var results = '';
+          var px = 0; var ele = imageData.length;
+          for(var i=0; i<ele; i+=4) {
+            if(px < nw) {
+              if(i < ele-4) {
+                results = results.concat('{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"},'); //head
+              } else {
+                results = results.concat('{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"}'); //back
+              }
+            } else {
+              results = results.concat('{"text":"\\n█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"},'); //n
+              px = 0;
+            }
+            px++;
+          }
+          return results;
+        }
+        function extract_data1() {
+          var results = '';
+          var px = 0; var ele = imageData.length;
+          for(var i=0; i<ele; i+=4) {
+            if(px < nw) {
+              if(i < ele-4) {
+                results = results.concat('{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"},'); //head
+              } else {
+                results = results.concat('{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"}'); //back
+              }
+            } else {
+              results = results.concat('""]\',\'[{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"},'); //n
+              px = 0;
+            }
+            px++;
+          }
+          return results;
+        }
+        function extract_data2() {
+          var results = '';
+          var px = 0; var ele = imageData.length;
+          var val = 0, minval = 0, size = 0;
+          var minName="",
+              strFont="/setblock ~ ~1 ~ minecraft:chest{Items:[{Slot:0b,id:\"minecraft:writable_book\",Count:1b,tag:{pages:[",
+              strBack="\"end\"]}}]}",
+              concat="",
+              concat2="";
+          for(var i=0; i<ele; i+=4) {
+            if(px <= nw) {
+              // if(i < ele-4) {
+              //   results = results.concat('{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"},'); //head
+              // } else {
+              //   results = results.concat('{"text":"█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"}'); //back
+              // }
+                minval = 768;
+                for (let index = 0; index < rgbN.length; index++) {
+                  val = distance(imageData[i],imageData[i+1],imageData[i+2],rgbR[index][0],rgbR[index][1],rgbR[index][2]);
+                  if (minval>val) {
+                      minval=val;
+                      minName = ""+index;
+                  }
+                }
+                concat += "\""+minName+"\",";
+                size++;
+                if (size>=6000){
+                    size = 0;
+                    console.log(strFont+concat+strBack);
+                    concat2 += '\n'+strFont+concat+strBack;
+                    concat = "";
+                }
+              
+              //results = results.concat('{"text":"\\n█","color":"#' + fullColorHex(imageData[i],imageData[i+1],imageData[i+2]) + '"},'); //n
+              px == nw ? px = 0 : {};
+            }
+            px++;
+          }
+          console.log(strFont+concat+strBack);
+          concat2 += '\n'+strFont+concat+strBack;
+          var i = 0;
+          var concat1="summon falling_block ~ ~1 ~ {BlockState:{Name:redstone_block},Time:1,Passengers:" +
+                "[{id:falling_block,BlockState:{Name:redstone_block},Passengers:[{id:falling_block,BlockS" +
+                "tate:{Name:activator_rail},Time:1,Passengers:[" +
+                "{id:command_block_minecart,Command:\"setblock ~ ~-1 ~3 minecraft:repeating_command_block[facing=up]{Command:\\\"data modify block ~ ~-1 ~-1 Items[0].tag.pages[0] set from block ~ ~-1 ~-1 Items[1].tag.pages[0]\\\"}\"}," +
+                "{id:command_block_minecart,Command:\"setblock ~ ~-2 ~2 minecraft:chest{Items:[{Slot:0b,id:\\\"minecraft:writable_book\\\",Count:1b,tag:{pages:[\\\"a\\\"]}}]}\"}," +
+                "{id:command_block_minecart,Command:\"scoreboard objectives add paintwrite dummy\"}," +
+                "{id:command_block_minecart,Command:\"scoreboard players set widthz paintwrite "+(nw)+"\"}," +
+                "{id:command_block_minecart,Command:\"scoreboard players set heigthx paintwrite "+(nh-1)+"\"}," +
+                "{id:command_block_minecart,Command:\"scoreboard players set z paintwrite "+(nw)+"\"}," +
+                "{id:command_block_minecart,Command:\"scoreboard players set x paintwrite "+(nh-1)+"\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\""+"execute if block ~ ~-"+(i+1)+" ~-1 minecraft:chest{Items:[{Slot:0b,id:\\\\\\\"minecraft:writable_book\\\\\\\",tag:{pages:[\\\\\\\"end\\\\\\\"]}}]} run data remove block ~ ~-"+(i+1)+" ~-1 Items[1]"+"\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\""+"execute if block ~ ~-"+(i+1)+" ~-1 minecraft:chest{Items:[{Slot:0b,id:\\\\\\\"minecraft:writable_book\\\\\\\",tag:{pages:[\\\\\\\"end\\\\\\\"]}}]} run data modify block ~ ~-"+(i+1)+" ~-1 Items[0].tag.pages[0] set from block ~ ~-"+(i+1)+" ~-1 Items[1].tag.pages[0]"+"\\\",auto:1b}\"},"+
+                "";
+        /*for (int i = 0; i < rgbN.length; i++) {
+            concat1 += "{id:command_block_minecart,Command:\"setblock ~ ~"+i+" ~2 "+rgbN[i]+"\"},";
+        }*/
+        for (let j = 0; j < rgbN.length; j++) {
+            concat1 += "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_b" +
+                    "lock[facing=up]{Command:\\\"execute if block ~ ~-"+(i+1)+" ~-1 minecraft:chest{Items:[{Slot:0b,id:\\\\\\\"mi" +
+                    "necraft:writable_book\\\\\\\",tag:{pages:[\\\\\\\""+j+"\\\\\\\"]}}]} at @e[tag=painter,tag=start] run setblock ~ ~-1 ~ "+rgbN[j]+"\\\",auto:1b}\"},";
+        }
+        concat1 += "" +
+                "{id:command_block_minecart,Command:\"setblock ~ ~-2 ~1 minecraft:command_block[facing=up]{Command:\\\"summon minecraft:armor_stand ~1 ~ ~ {NoGravity:1b,Tags:[\\\\\\\"painter\\\\\\\",\\\\\\\"start\\\\\\\"],CustomName:\\\\\\\"2\\\\\\\",CustomNameVisible:1b}\\\"}\"}," +
+                //"{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\""+"execute if block ~ ~-"+(i+1)+" ~-1 minecraft:chest{Items:[{Slot:0b,id:\\\\\\\"minecraft:writable_book\\\\\\\",tag:{pages:[\\\\\\\"end\\\\\\\"]}}]} run data remove block ~ ~-"+(i+1)+" ~-1 Items[1]"+"\\\",auto:1b}\"}," +
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"data remove block ~ ~-"+(i+1)+" ~-1 Items[1].tag.pages[0]\\\",auto:1b}\"}," +
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter,tag=start] run scoreboard players remove z paintwrite 1\\\",auto:1b}\"}," +
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter,tag=start] if score z paintwrite matches 0 if score x paintwrite matches 0 run kill @s\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter,tag=start] at @s if score z paintwrite matches 0 run tp @s ~1 ~ ~-"+(nw)+"\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter,tag=start] if score z paintwrite matches 0 run scoreboard players remove x paintwrite 1\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter,tag=start] if score z paintwrite matches 0 run scoreboard players operation z paintwrite = widthz paintwrite\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter,tag=start] at @s run tp @s ~ ~ ~1\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~1 ~ minecraft:command_block{Command:\\\"fill ~ ~ ~ ~ ~-3 ~ air\\\",auto:1b}\"}," +
+                "{id:command_block_minecart,Command:\"/kill @e[type=minecraft:command_block_minecart,distance=..1]\"}]}]}]}";
+        console.log(concat1);
+          return concat1+concat2;
+        }
+        function getCode(sel) {
+            /* Get the text field */
+          switch (sel) {
+            case 0:
+                var copyText = document.getElementById("output");
+                copyText.value = 'tellraw @p [' + extract_data() + ']';
+                break;
+            case 1:
+                var copyText = document.getElementById("output1");
+                copyText.value = 'give @p minecraft:painting{display:{Name:\'"\\\\u00a7ca"\',Lore:[\'[' + extract_data1() + ']\']}}';
+                break;
+            case 2:
+                var copyText = document.getElementById("output2");
+                copyText.value = extract_data2();
+                break;
+            default:
+              break;
+          }
+          /* Select the text field */
+          //copyText.select();
+          //copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+  
+          /* Copy the text inside the text field */
+          //document.execCommand("copy");
+  
+          /* Alert the copied text */
+          //alert("Copied the text: " + copyText.value);
+        }
+        var distance = function (r,g,b,r1,g1,b1) {
+            var rmean = (r+r1)/2;
+            r -= r1;
+            g -= g1;
+            b -= b1;
+            return Math.sqrt((2+rmean/256)*(r*r)+4*(g*g)+(2+(255-rmean)/256)*(b*b));
+        };
+        var fullColorHex = function(r,g,b) {   
+          var red = rgbToHex(r);
+          var green = rgbToHex(g);
+          var blue = rgbToHex(b);
+          return red+green+blue;
+        };
+        var rgbToHex = function (rgb) { 
+          var hex = Number(rgb).toString(16);
+          if (hex.length < 2) {
+              hex = "0" + hex;
+          }
+          return hex;
+        };
+        function isImage(filename) {
+          var ext = getExtension(filename);
+          switch (ext.toLowerCase()) {
+            case 'jpg':
+            case 'png':
+              //etc
+              return true;
+          }
+          return false;
+        }
+        function isVideo(filename) {
+          var ext = getExtension(filename);
+          switch (ext.toLowerCase()) {
+            case 'mp4':
+              // etc
+              return true;
+          }
+          return false;
+        }
+      </script>
+  </body>
+</html>
