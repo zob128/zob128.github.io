@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>PaintBlock</title>
+    <title>PaintBlock_Alpha_1.14+</title>
     <style>
         body{
             background-color: burlywood;
@@ -16,11 +16,12 @@
   <body>
     
     <input type="file" id="myFile"></input>
-    
+    <a id="imgscale">imgscale:</a>
     <input type="button" value="参照链接" onclick="javascript:window.location.href='https://codepen.io/Cloud_Wolf/pen/bGVgBEW'">
     
-    <canvas id="myCanvas" width="1" height="1" style="border:1px solid #d3d3d3;">
+    <canvas id="myCanvas" width="1" height="1" style="border:1px solid #d3d3d3;" onmousemove="cnvs_getCoordinates(event)" onmouseout="cnvs_clearCoordinates()">
     Your browser does not support the HTML5 canvas tag.</canvas>
+    <div id="xycoordinates"></div>
     <br>
     <button onclick="getCode(0)">Copy Output</button>
     <input type="text" value="tellraw>Null" id="output">
@@ -30,17 +31,39 @@
     <br>
     <button onclick="getCode(2)">Copy Output</button>
     <textarea id="output2">paintblock>Null</textarea>
+    <a id="time">need time:</a>
+    <br>
+    <a>paintblock使用方法:</a>
+    <br>
+    <a>激活第一行指令，将第二行往下生成的书的次序，</a>
+    <br>
+    <a>从左向右放入空箱子中，激活旁边脉冲命令方块，</a>
+    <br>
+    <a>后激活循环命令方块，将会以xz轴正方向生成图像。</a>
     <br>
       <label for="width">Width:</label>
       <input type="number" id="width" name="quantity" min="1" max="1024" value = "16">
       <label for="height">Height:</label>
       <input type="number" id="height" name="quantity" min="1" max="1024" value = "16">
+      <a>--设置画布大小</a>
+    <br>
+    <label for="cutwidth">cutWidth:</label>
+    <input type="number" id="cutwidth" name="quantity" min="0" max="1024" value = "0">
+    <label for="cutheight">cutHeight:</label>
+    <input type="number" id="cutheight" name="quantity" min="0" max="1024" value = "0">
+    <a>--截取起始位置</a>
+    <br>
+    <label for="cutwidthl">cutwidthl:</label>
+    <input type="number" id="cutwidthl" name="quantity" min="1" max="1024" value = "1">
+    <label for="cutheighl">cutheighl:</label>
+    <input type="number" id="cutheighl" name="quantity" min="1" max="1024" value = "1">
+    <a>--截取矩形大小</a>
     <br>
       <img id="myImage" style="border:1px" />
       <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
-        var image,nw,nh;
+        var image,nw,nh,cw1,ch1,cw2,ch2,cvhis;
         var rgbR=[
                 [9,11,16],      //minecraft:black_concrete
                 [38,23,16],     //minecraft:black_terracotta
@@ -155,10 +178,41 @@
         ];
         document.getElementById("width").onchange = () => getImageData(document.getElementById("myImage"));
         document.getElementById("height").onchange = () => getImageData(document.getElementById("myImage"));
+        document.getElementById("cutwidth").onchange = () => getImageData(document.getElementById("myImage"));
+        document.getElementById("cutheight").onchange = () => getImageData(document.getElementById("myImage"));
+        document.getElementById("cutwidthl").onchange = () => getImageData(document.getElementById("myImage"));
+        document.getElementById("cutheighl").onchange = () => getImageData(document.getElementById("myImage"));
+        
+        // function cutborder() {
+        //   let img = document.getElementById("myImage");
+        //   ctx.clearRect(0,0,document.getElementById("width").value / img.width ,document.getElementById("height").value / img.height);
+        //   // ctx.scale(document.getElementById("width").value / img.width ,document.getElementById("height").value / img.height);
+        //   // ctx.drawImage(img, 0, 0);
+        //   ctx.strokeStyle = "#f60";
+        //   ctx.lineWidth = 4;
+        //   ctx.strokeRect(
+        //     document.getElementById("cutwidth").value,
+        //     document.getElementById("cutheight").value,
+        //     document.getElementById("cutwidthl").value,
+        //     document.getElementById("cutheighl").value
+        //     );
+        // }
         // function ip() {
         //   console.log(document.getElementById("width").value);
         //   console.log(document.getElementById("height").value);
         // }
+        function cnvs_getCoordinates(e)
+        {
+            let de = document.documentElement;
+            x=e.clientX+de.scrollLeft-canvas.offsetLeft;
+            y=e.clientY+de.scrollTop-canvas.offsetTop;
+            document.getElementById("xycoordinates").innerHTML="Coordinates: (" + x + "," + y + ")";
+        }
+        
+        function cnvs_clearCoordinates()
+        {
+            document.getElementById("xycoordinates").innerHTML="";
+        }
         document.getElementById("myFile").onchange = function (evt) {
             var tgt = evt.target || window.event.srcElement,
                 files = tgt.files;
@@ -171,17 +225,27 @@
         }
         function showImage(fileReader) {
             var img = document.getElementById("myImage");
-            img.onload = () => getImageData(img);
+            img.onload = () => {
+              getImageData(img);
+              document.getElementById("imgscale").innerText='imgscale:'+img.width+'x'+img.height;
+            }
             img.src = fileReader.result;
         }
         function getImageData(img) {
             console.log(img);
             nw = document.getElementById("width").value;
             nh = document.getElementById("height").value;
+            cw1 = document.getElementById("cutwidth").value;
+            ch1 = document.getElementById("cutheight").value;
+            cw2 = document.getElementById("cutwidthl").value;
+            ch2 = document.getElementById("cutheighl").value;
             canvas.width = nw; canvas.height = nh;
             ctx.scale(nw / img.width ,nh / img.height);
             ctx.drawImage(img, 0, 0);
-            imageData = ctx.getImageData(0, 0, nw, nh).data;
+            //imageData = ctx.getImageData(0, 0, nw, nh).data;
+            imageData = ctx.getImageData(cw1, ch1, cw2, ch2).data;
+            nw = cw2;
+            nh = ch2;
             console.log(imageData);
         }
   
@@ -285,12 +349,12 @@
                     "necraft:writable_book\\\\\\\",tag:{pages:[\\\\\\\""+j+"\\\\\\\"]}}]} at @e[tag=painter"+random+",tag=start] run setblock ~ ~-1 ~ "+rgbN[j]+"\\\",auto:1b}\"},";
         }
         concat1 += "" +
-                "{id:command_block_minecart,Command:\"setblock ~ ~-2 ~1 minecraft:command_block[facing=up]{Command:\\\"summon minecraft:armor_stand ~1 ~ ~ {NoGravity:1b,Tags:[\\\\\\\"painter"+random+"\\\\\\\",\\\\\\\"start\\\\\\\"],CustomName:\\\\\\\"2\\\\\\\",CustomNameVisible:1b}\\\"}\"}," +
+                "{id:command_block_minecart,Command:\"setblock ~ ~-2 ~1 minecraft:command_block[facing=up]{Command:\\\"summon minecraft:armor_stand ~1 ~ ~ {NoGravity:1b,Tags:[\\\\\\\"painter"+random+"\\\\\\\",\\\\\\\"start\\\\\\\"],CustomName:\'\\\\\\\"painter"+random+"\\\\\\\"\',CustomNameVisible:1b}\\\"}\"}," +
                 //"{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\""+"execute if block ~ ~-"+(i+1)+" ~-1 minecraft:chest{Items:[{Slot:0b,id:\\\\\\\"minecraft:writable_book\\\\\\\",tag:{pages:[\\\\\\\"end\\\\\\\"]}}]} run data remove block ~ ~-"+(i+1)+" ~-1 Items[1]"+"\\\",auto:1b}\"}," +
                 "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"data remove block ~ ~-"+(i+1)+" ~-1 Items[1].tag.pages[0]\\\",auto:1b}\"}," +
                 "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter"+random+",tag=start] run scoreboard players remove z paintwrite"+random+" 1\\\",auto:1b}\"}," +
                 "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter"+random+",tag=start] if score z paintwrite"+random+" matches 0 if score x paintwrite"+random+" matches 0 run kill @s\\\",auto:1b}\"},"+
-                //"{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute if score z paintwrite"+random+" matches 0 if score x paintwrite"+random+" matches 0 run scoreboard objectives remove paintwrite"+random+"\\\",auto:1b}\"},"+
+                "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute if score z paintwrite"+random+" matches 0 if score x paintwrite"+random+" matches 0 run scoreboard objectives remove paintwrite"+random+"\\\",auto:1b}\"},"+
                 "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter"+random+",tag=start] at @s if score z paintwrite"+random+" matches 0 run tp @s ~1 ~ ~-"+(nw)+"\\\",auto:1b}\"},"+
                 "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter"+random+",tag=start] if score z paintwrite"+random+" matches 0 run scoreboard players remove x paintwrite"+random+" 1\\\",auto:1b}\"},"+
                 "{id:command_block_minecart,Command:\"setblock ~ ~"+(i++)+" ~3 minecraft:chain_command_block[facing=up]{Command:\\\"execute as @e[tag=painter"+random+",tag=start] if score z paintwrite"+random+" matches 0 run scoreboard players operation z paintwrite"+random+" = widthz paintwrite"+random+"\\\",auto:1b}\"},"+
@@ -298,6 +362,7 @@
                 "{id:command_block_minecart,Command:\"setblock ~ ~1 ~ minecraft:command_block{Command:\\\"fill ~ ~ ~ ~ ~-3 ~ air\\\",auto:1b}\"}," +
                 "{id:command_block_minecart,Command:\"/kill @e[type=minecraft:command_block_minecart,distance=..1]\"}]}]}]}";
         console.log(concat1);
+        document.getElementById('time').innerText = 'need time:'+ticktotime(nw*nh);
           return concat1+concat2;
         }
         function getCode(sel) {
@@ -328,6 +393,15 @@
           /* Alert the copied text */
           //alert("Copied the text: " + copyText.value);
         }
+        var ticktotime = function (tick) {
+          var hou = 0, min = 0, sec = 0;
+          sec = Math.floor(tick/20);
+          min = Math.floor(sec/60);
+          hou = Math.floor(min/60)
+          min %= 60;
+          sec %= 60;
+          return hou+'h'+min+'m'+sec+'s';
+        };
         var distance = function (r,g,b,r1,g1,b1) {
             var rmean = (r+r1)/2;
             r -= r1;

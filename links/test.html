@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>test</title>
+        <style>
+            body {
+                background-color: chocolate;
+            }
+        </style>
+    </head>
+    <body>
+        <input type="file" id="myFile"></input>
+        <label for="width">Width:</label>
+        <input type="number" id="width" name="quantity" min="1" max="1024" value = "16">
+        <label for="height">Height:</label>
+        <input type="number" id="height" name="quantity" min="1" max="1024" value = "16">
+        <br>
+        <img id="myImage"/>
+        <br>
+        <div id="xycoordinates"></div>
+        <canvas id="myCanvas" width="1" height="1">Your browser does not support the HTML5 canvas tag</canvas>
+        <script>
+            var canvas = document.getElementById('myCanvas');
+            var de = document.documentElement;
+            
+            document.getElementById("width").onchange = () => getImageData(document.getElementById("myImage"));
+            document.getElementById("height").onchange = () => getImageData(document.getElementById("myImage"));
+            document.getElementById('myFile').onchange = function (evt) {
+                var tgt = evt.target || window.event.srcElement,
+                    files = tgt.files;
+                if (FileReader && files && files.length) {
+                    var fr = new FileReader();
+                    fr.onload = () => showImage(fr);
+                    fr.readAsDataURL(files[0]);
+                    console.log(files[0]);
+                }
+            }
+            function showImage(fileReader) {
+                var img = document.getElementById("myImage");
+                img.onload = () => getImageData(img);
+                img.src = fileReader.result;
+            }
+            function getImageData(img) {
+                //console.log(img);
+                var canvas = document.getElementById("myCanvas");
+                var ctx = canvas.getContext("2d");
+                var nw = document.getElementById("width").value;
+                var nh = document.getElementById("height").value;
+                canvas.width = nw; canvas.height = nh;
+                ctx.scale(nw / img.width ,nh / img.height);
+                ctx.drawImage(img, 0, 0);
+                imageData = ctx.getImageData(0, 0, nw, nh).data;
+                console.log(imageData);
+            }
+            document.getElementById('myCanvas').onmousemove = function cnvs_getCoordinates(e)
+            {
+                x=e.clientX;
+                y=e.clientY;
+                document.getElementById("xycoordinates").innerHTML="mouse: (" + x + "," + y + ")"+
+                "offset(x,y):("+canvas.offsetLeft+","+canvas.offsetTop+")"+
+                "body(x,y):("+de.scrollLeft+","+de.scrollTop+")"+
+                "corrent(x,y):("+(x+de.scrollLeft-canvas.offsetLeft)+","+(y+de.scrollTop-canvas.offsetTop)+")"
+                ;
+            }
+            document.getElementById('myCanvas').onmouseleave = function cnvs_clearCoordinates()
+            {
+                document.getElementById("xycoordinates").innerHTML="";
+            }
+        </script>
+    </body>
+</html>
