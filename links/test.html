@@ -22,7 +22,11 @@
         <canvas id="myCanvas" width="1" height="1">Your browser does not support the HTML5 canvas tag</canvas>
         <script>
             var canvas = document.getElementById('myCanvas');
+            var ctx = canvas.getContext("2d");
             var de = document.documentElement;
+
+            var cPushArray = [];
+            var cStep = -1;
             
             document.getElementById("width").onchange = () => getImageData(document.getElementById("myImage"));
             document.getElementById("height").onchange = () => getImageData(document.getElementById("myImage"));
@@ -43,8 +47,6 @@
             }
             function getImageData(img) {
                 //console.log(img);
-                var canvas = document.getElementById("myCanvas");
-                var ctx = canvas.getContext("2d");
                 var nw = document.getElementById("width").value;
                 var nh = document.getElementById("height").value;
                 canvas.width = nw; canvas.height = nh;
