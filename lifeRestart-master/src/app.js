@@ -518,6 +518,7 @@ class App{
                 if(this.#isEnd) return;
                 const evtid = this.#life.next1('get');
                 trajectoryPage.find('#evtgetinfo').val(evtid);
+                this.hint(evtid);
             });
         trajectoryPage
             .find('#evtset')
