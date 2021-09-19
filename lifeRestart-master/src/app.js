@@ -496,7 +496,7 @@ class App{
                     <button id="evtget" class="mainbtn" style="font-size: inherit; padding: 0.5em;">读取事件</button>
                     <button id="evtset" class="mainbtn" style="font-size: inherit; padding: 0.5em;">写入事件</button>
                 </div>
-                <div style="margin: auto auto;">
+                <div>
                     <div>
                         <a style="color: white;">getid:</a>
                         <input id="evtgetinfo" value="[[10001,10]]" readOnly="true" style="background: inherit; font: inherit; color: inherit; border: none; width: 4em;">
