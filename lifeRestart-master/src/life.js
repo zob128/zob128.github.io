@@ -67,6 +67,28 @@ class Life {
         )
         return { age, content, isEnd };
     }
+    //app.evtget/evtset
+    next1(state,arrevt) {
+        if (state=='get') {
+            const {age, event, talent} = this.#property.ageNext1();
+            return JSON.stringify(event);
+        }
+        if (state=='set') {
+            const {age, event, talent} = this.#property.ageNext();
+
+            const talentContent = this.doTalent(talent);
+            const eventContent = this.doEvent(arrevt);
+
+            const isEnd = this.#property.isEnd();
+
+            const content = [talentContent, eventContent].flat();
+            this.#achievement.achieve(
+                this.#achievement.Opportunity.TRAJECTORY,
+                this.#property
+            )
+            return { age, content, isEnd };
+        }
+    }
 
     talentReplace(talents) {
         const result = this.#talent.replace(talents);

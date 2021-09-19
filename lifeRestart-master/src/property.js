@@ -309,6 +309,13 @@ class Property {
         const {event, talent} = this.getAgeData(age);
         return {age, event, talent};
     }
+    //life.next1
+    ageNext1() {
+        // this.change(this.TYPES.AGE, 1);
+        const age = this.get(this.TYPES.AGE);
+        const {event, talent} = this.getAgeData(age);
+        return {age, event, talent};
+    }
 
     getAgeData(age) {
         return clone(this.#ageData[age]);
