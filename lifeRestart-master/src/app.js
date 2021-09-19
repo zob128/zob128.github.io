@@ -499,11 +499,11 @@ class App{
                 <div style="margin: auto auto;">
                     <div>
                         <a style="color: white;">getid:</a>
-                        <input id="evtgetinfo" value="10001" readOnly="true" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: fit-content;">
+                        <input id="evtgetinfo" value="[[10001,10]]" readOnly="true" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: 1em;">
                     </div>
                     <div>
                         <a href="https://github.com/VickScarlet/lifeRestart/blob/master/data/events.json" style="color: white;">setid:</a>
-                        <input id="evtsetid" value="10001" type="number" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: fit-content;">
+                        <input id="evtsetid" value="10001" type="number" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: 1em;">
                     </div>
                 </div>
             </div>
