@@ -481,7 +481,6 @@ class App{
             });
 
         // Trajectory
-        //<a style="color: white;">getid:</a> <a href="https://github.com/VickScarlet/lifeRestart/blob/master/data/events.json" style="color: white;">setid:</a>
         const trajectoryPage = $(`
         <div id="main">
             <ul id="lifeProperty" class="lifeProperty"></ul>
@@ -499,12 +498,12 @@ class App{
                 </div>
                 <div style="margin: auto auto;">
                     <div>
-                        
-                        <input id="evtgetinfo" value="[[10001,10]]" readOnly="true" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: fit-content;">
+                        <a style="color: white;">getid:</a>
+                        <input id="evtgetinfo" value="[[10001,10]]" readOnly="true" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: 50px;">
                     </div>
                     <div>
-                        
-                        <input id="evtsetid" value="10001" type="number" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: fit-content;">
+                        <a href="https://github.com/VickScarlet/lifeRestart/blob/master/data/events.json" style="color: white;">setid:</a>
+                        <input id="evtsetid" value="10001" type="number" style="background: inherit;font: inherit;color: inherit;border-color: white;border-radius: 5px;border-style: solid;color: white;height: 50px;">
                     </div>
                 </div>
             </div>
