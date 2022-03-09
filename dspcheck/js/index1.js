@@ -409,8 +409,8 @@ class ProductStat{
 	total = []
 	itemId = 0
 	checkpoint = {
-		startpoint:0,
-		endpoint:0,
+		// startpoint:0,
+		// endpoint:0,
 		totalnum13:0,
 	}
 	/**
@@ -574,6 +574,8 @@ class PowerStat{
 class FactoryProductionStat{
 	productPool = []
 	checkpoint = {
+		productStatStart:0,
+		productStatEnd:0,
 		productIndices:0,
 	}
 	/**
@@ -585,11 +587,13 @@ class FactoryProductionStat{
 		var num2 = stream.readInt32();
 		// this.SetProductCapacity(num2);
 		this.productCursor = stream.readInt32();
+		this.checkpoint.productStatStart = stream.point;
 		for (var i = 1; i < this.productCursor; i++)
 		{
 			this.productPool[i] = new ProductStat();
 			this.productPool[i].Import(stream);
 		}
+		this.checkpoint.productStatEnd = stream.point;
 		var num3 = stream.readInt32();
 		this.powerPool = new Array(5);
 		for (var j = 0; j < 5; j++)
@@ -1156,10 +1160,13 @@ class DecodeDSV{
 						var ps = new ProductStat()
 						ps.Init(itemId);
 						ps.Export(bw);
-						this.binWriter.write(++factoryStatPool.productCursor,4,factoryStatPool.productPool[1].checkpoint.startpoint-8);
-						this.binWriter.write(factoryStatPool.productCursor,4,factoryStatPool.productPool[1].checkpoint.startpoint-4);
+						// this.binWriter.write(++factoryStatPool.productCursor,4,factoryStatPool.productPool[1].checkpoint.startpoint-8);
+						// this.binWriter.write(factoryStatPool.productCursor,4,factoryStatPool.productPool[1].checkpoint.startpoint-4);
+						this.binWriter.write(++factoryStatPool.productCursor,4,factoryStatPool.checkpoint.productStatStart-8);
+						this.binWriter.write(factoryStatPool.productCursor,4,factoryStatPool.checkpoint.productStatStart-4);
 						this.array[factoryStatPool.checkpoint.productIndices+this.offset+4*itemId] = factoryStatPool.productCursor-1;
-						this.offset += this.binWriter.insertArray(bw.src,factoryStatPool.productPool[factoryStatPool.productPool.length-1].checkpoint.endpoint+this.offset);
+						// this.offset += this.binWriter.insertArray(bw.src,factoryStatPool.productPool[factoryStatPool.productPool.length-1].checkpoint.endpoint+this.offset);
+						this.offset += this.binWriter.insertArray(bw.src,factoryStatPool.checkpoint.productStatEnd+this.offset);
 						this.binWriter.write(this.array.length,8,6);
 					} else {
 						this.binWriter.write(0x7FFFFFFF,8,factoryStatPool.productPool[itemIndex].checkpoint.totalnum13);
