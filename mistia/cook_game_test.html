@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夜雀食堂小助手</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        background-color: burlywood;
+    }
+    .container{
+        display: flex;
+        justify-content: center;
+        height: 100vh;
+    }
+    .frame{
+        height: inherit;
+        display: flex;
+        flex-direction: column;
+    }
+    .container > .charframe,
+    .container > .infoframe{
+        width: 30%;
+    }
+    .container > .foodframe{
+        width: 40%;
+    }
+    .container > .foodframe,
+    .container > .infoframe{
+        align-items: center;
+    }
+    .container > .infoframe{
+        background-color: cornsilk;
+        border: 5px solid brown;
+        height: auto;
+    }
+    .tag{
+        margin: 5px 5px;
+        font-weight: bold;
+        white-space: nowrap;
+        border-radius: 4px;
+        padding: 2px;
+    }
+    .tag.like{
+        color: rgb(131, 0, 0);
+        background-color: rgb(230, 190, 166);
+    }
+    .tag.hate{
+        color: red;
+        background-color: rgb(93, 69, 58);
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="frame charframe">
+            <zob-horizon title="滚轮滑动">
+                <div class="scene_list">
+                    <div class="scene active" key="char">全部</div>
+                    <div class="scene" key="ygsd">妖怪兽道</div>
+                    <div class="scene" key="rjzl">人间之里</div>
+                    <div class="scene" key="blss">博丽神社</div>
+                    <div class="scene" key="hmg">红魔馆</div>
+                    <div class="scene" key="mtzl">迷途竹林</div>
+                    <div class="scene" key="mfsl">魔法森林</div>
+                    <div class="scene" key="ygzs">妖怪之山</div>
+                    <div class="scene" key="jdy">旧地狱</div>
+                    <div class="scene" key="dld">地灵殿</div>
+                    <div class="scene" key="mls">命莲寺</div>
+                    <div class="scene" key="slm">神灵庙</div>
+                    <div class="scene" key="tyht">太阳花田</div>
+                    <div class="scene" key="hzc">辉针城</div>
+                    <div class="scene" key="mj">魔界</div>
+                    <div class="scene" key="yzd">月之都</div>
+                </div>
+            </zob-horizon>
+            <style>
+                .scene_list{
+                    display: flex;
+                    white-space: nowrap;
+                }
+                .scene_list > .scene{
+                    color: white;
+                    background-color: chocolate;
+                    margin: auto 10px;
+                    cursor: pointer;
+                }
+                .scene_list > .scene.active{
+                    color: black;
+                    background-color: white;
+                }
+            </style>
+            <script>
+                class MyElement extends HTMLElement{
+                    static observedAttributes = ["width", "height"];
+                    constructor(){
+                        super();
+                    }
+                    connectedCallback(){
+                        // 创建影子根
+                        // const shadow = this.attachShadow({ mode: "open" });
+                        const shadow = this;
+                        
+                        const scroll = document.createElement('div');
+                        scroll.classList.add('scroll');
+
+                        const content = document.createElement('div');
+                        content.classList.add('content');
+                        Array.from(this.children).forEach(element=>{
+                            content.appendChild(element);
+                        })
+                        shadow.appendChild(scroll);
+                        scroll.appendChild(content);
+
+                        // 创建一些 CSS 应用于影子 DOM
+                        const style_instant = document.createElement("style");
+                        style_instant.classList.add('instant');
+                        // style_instant.textContent = `
+                        // zob-horizon{
+                        //     --content-width: ${this.clientWidth}px;
+                        //     --content-height: ${content.clientHeight}px;
+                        // }
+                        // `
+                        shadow.appendChild(style_instant);
+
+                        this.setAttribute('width', this.clientWidth)
+                        this.setAttribute('height', content.clientHeight)
+
+                        const style = document.createElement("style");
+                        style.textContent = `
+                        zob-horizon{
+                            display: block;
+                            height: var(--content-height);
+                        }
+                        zob-horizon .scroll{
+                            position: relative;
+                            top: var(--content-height);
+                            transform-origin: left top;
+                            transform: rotate(-90deg);
+                            overflow-x: auto;
+                            height: var(--content-width);
+                            width: var(--content-height);
+                        }
+                        zob-horizon .scroll::-webkit-scrollbar{
+                            display: none;
+                        }
+                        zob-horizon .content{
+                            position: relative;
+                            top: calc(0px - var(--content-height));
+                            transform-origin: left bottom;
+                            transform: rotate(90deg);
+                        }
+                        `;
+                        shadow.appendChild(style);
+
+                        console.log('自定义元素添加至页面。');
+                    }
+                    attributeChangedCallback(name, oldValue, newValue){
+                        // console.log(`属性 ${name} 已由 ${oldValue} 变更为 ${newValue}。`);
+                        this.updateStyle();
+                    }
+                    updateStyle(){
+                        // this.querySelector('.scroll').style = `height: ${this.clientWidth}px;`
+                        this.querySelector('style.instant').textContent = `
+                        zob-horizon{
+                            --content-width: ${this.getAttribute('width')}px;
+                            --content-height: ${this.getAttribute('height')}px;
+                        }
+                        `
+                    }
+                }
+                window.customElements.define('zob-horizon', MyElement);
+                window.addEventListener('resize',()=>{
+                    document.querySelectorAll('zob-horizon').forEach((element)=>{
+                        element.setAttribute('width', element.clientWidth)
+                    })
+                })
+            </script>
+            <div class="inner">
+                <div class="char_list">
+                    <div class="char">
+                        <h4>莉格露</h4>
+                        <img src="./img/gear.png" alt="" class="head">
+                        <div class="reserve">
+                            <img src="./img/gear.png" alt="" class="icon">
+                            <img src="./img/gear.png" alt="" class="icon">
+                            <img src="./img/gear.png" alt="" class="icon">
+                        </div>
+                    </div>
+                    <div class="char">123</div>
+                    <div class="char">123</div>
+                    <div class="char">123</div>
+                    <div class="char">123</div>
+                    <div class="char">123</div>
+                </div>
+            </div>
+            <style>
+                .charframe > .inner{
+                    height: -webkit-fill-available;
+                    overflow: hidden;
+                    border: 5px solid brown;
+                }
+                .charframe .char_list{
+                    display: grid;
+                    grid-template-columns: repeat(4, 25%);
+                    max-height: -webkit-fill-available;
+                    overflow-x: auto;
+                }
+                .charframe .char_list::-webkit-scrollbar{
+                    display: none;
+                }
+                .charframe .char_list > .char{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    background-color: cornsilk;
+                    margin: 10px;
+                    cursor: pointer;
+                }
+                .charframe .char_list > .char:hover{
+                    box-shadow: 0px 0px 3px 3px white;
+                }
+                .charframe .char_list > .char > h4{
+                    text-align: center;
+                }
+                .charframe .char_list > .char > h4.rc{
+                    color: green;
+                }
+                .charframe .char_list > .char.hidden{
+                    display: none;
+                }
+                /* .char_list > .char img.head{
+                    width: 30px;
+                    height: 30px;
+                }
+                .char_list > .char img.icon{
+                    width: 20px;
+                    height: 20px;
+                } */
+                .charframe .char_list > .char > .reserve{
+                    display: none;
+                }
+                .charframe .char_list > .char:hover > .reserve{
+                    display: block;
+                }
+            </style>
+            <script></script>
+        </div>
+        <div class="frame foodframe">
+            <table class="match">
+                <caption><h2 style="margin: 10px;">匹配</h2></caption>
+                <thead>
+                    <tr>
+                        <th>料理</th>
+                        <th class="id clickable">名称[o]</th>
+                        <th class="tool clickable">道具[o]</th>
+                        <th>食材</th>
+                        <th class="match_tag clickable">匹配标签[o]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="item" key="【DLC2】大江户船祭">
+                        <th>
+                            <img src="./img/recipes/大江户船祭.png" class="icon" title="【DLC2】大江户船祭">
+                        </th>
+                        <th score="orange">【DLC2】大江户船祭</th>
+                        <th>
+                            <img src="./img/tools/料理台.png" class="icon" title="料理台">
+                        </th>
+                        <th>
+                            <img src="./img/ingredients/鳟鱼.png" class="icon" title="鳟鱼">
+                            <img src="./img/ingredients/三文鱼.png" class="icon" title="三文鱼">
+                            <img src="./img/ingredients/金枪鱼.png" class="icon" title="金枪鱼">
+                            <img src="./img/ingredients/极上金枪鱼.png" class="icon" title="极上金枪鱼">
+                            <img src="./img/ingredients/冰块.png" class="icon" title="冰块">
+                        </th>
+                        <th>
+                            <span class="tag like">高级</span>
+                            <span class="tag like">传说</span>
+                            <span class="tag like">生</span>
+                        </th>
+                    </tr>
+                    <tr class="item" key="惠灵顿牛排">
+                        <th>
+                            <img src="./img/recipes/惠灵顿牛排.png" class="icon" title="惠灵顿牛排">
+                        </th>
+                        <th score="orange">惠灵顿牛排</th>
+                        <th>
+                            <img src="./img/tools/油锅.png" class="icon" title="油锅">
+                        </th>
+                        <th>
+                            <img src="./img/ingredients/和牛.png" class="icon" title="和牛">
+                            <img src="./img/ingredients/松露.png" class="icon" title="松露">
+                            <img src="./img/ingredients/鸡蛋.png" class="icon" title="鸡蛋">
+                            <img src="./img/ingredients/黄油.png" class="icon" title="黄油">
+                            <img src="./img/ingredients/面粉.png" class="icon" title="面粉">
+                        </th>
+                        <th>
+                            <span class="tag like">高级</span>
+                            <span class="tag like">传说</span>
+                            <span class="tag like">西式</span>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+            <style>
+                .foodframe table{
+                    height: inherit;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .foodframe thead{
+                    background-color: #fbeebb;
+                }
+                .foodframe tbody tr:nth-child(odd){
+                    background-color: #fcfcdd;
+                }
+                .foodframe tbody tr:nth-child(even){
+                    background-color: #ffe;
+                }
+                .foodframe img.icon{
+                    width: 30px;
+                }
+                .foodframe .ingredient{
+                    display: inline-block;
+                }
+                .foodframe [score='4']{
+                    color: pink;
+                }
+                .foodframe [score='3']{
+                    color: orange;
+                }
+                .foodframe [score='2']{
+                    color: green;
+                }
+                .foodframe [score='1']{
+                    color: purple;
+                }
+                .foodframe [score='0']{
+                    color: black;
+                }
+
+                .foodframe tbody{
+                    display: block;
+                    height: auto;
+                    overflow-x: auto;
+                }
+                .foodframe tbody::-webkit-scrollbar{
+                    display: none;
+                }
+                .foodframe thead,
+                .foodframe tbody tr{
+                    table-layout: fixed;
+                    display: table;
+                    width: 100%;
+                }
+                .foodframe tbody tr{
+                    cursor: pointer;
+                    transition: 0.3s;
+                }
+                .foodframe tbody tr.active{
+                    box-shadow: 5px 0px 0px 0px pink inset;
+                }
+                .foodframe tbody tr:hover{
+                    box-shadow: 8px 0px 0px 0px pink inset;
+                }
+                .foodframe tbody .tag{
+                    line-height: 200%;
+                }
+                .clickable{
+                    cursor: pointer;
+                }
+            </style>
+        </div>
+        <div class="frame infoframe">
+            <h2 class="name">名字</h2>
+            <img src="./img/character/今泉影狼.png" alt="">
+            <span class="price">9999-9999</span>
+            <div class="tag_info">
+                <div class="like_info">
+                    <div class="tag like">灼热</div>
+                    <div class="tag like">素</div>
+                </div>
+                <div class="hate_info">
+                    <div class="tag hate">灼热</div>
+                    <div class="tag hate">素</div>
+                </div>
+            </div>
+            <div class="spell">
+                <div class="positive"></div>
+                <div class="negative"></div>
+            </div>
+            <div class="pin">
+                <table>
+                    <thead>
+                        <th>料理</th>
+                        <th class="id">名称</th>
+                        <th class="tool">道具</th>
+                        <th>食材</th>
+                        <th class="match_tag">匹配标签</th>
+                    </thead>
+                    <tbody>
+                        <!-- <tr class="item" key="桃花羹">
+                            <th>
+                                <img src="./img/recipes/桃花羹.png" class="icon" title="桃花羹">
+                            </th>
+                            <th score="orange">桃花羹</th>
+                            <th>
+                                <img src="./img/tools/煮锅.png" class="icon" title="煮锅">
+                            </th>
+                            <th>
+                                <img src="./img/ingredients/桃子.png" class="icon" title="桃子">
+                                <img src="./img/ingredients/露水.png" class="icon" title="露水">
+                                <img src="./img/ingredients/冰块.png" class="icon" title="冰块">
+                                <img src="./img/plus.png" class="icon" title="添加">
+                            </th>
+                            <th>
+                                <span class="tag like">甜</span>
+                                <span class="tag like">凉爽</span>
+                                <span class="tag like">适合拍照</span>
+                            </th>
+                        </tr> -->
+                    </tbody>
+                </table>
+            </div>
+            <style>
+                .infoframe > .name{
+                    margin: 30px auto;
+                }
+                .infoframe > img{
+                    width: 100px;
+                    padding: 10px;
+                }
+                .infoframe > span.price{
+                    color: rgb(255, 217, 103);
+                    font-weight: bold;
+                    background-color: rgb(147, 101, 67);
+                    padding: 2px;
+                    border-radius: 8px;
+                }
+                .infoframe > .tag_info{
+                    display: flex;
+                    flex-direction: column;
+                }
+                .infoframe .like_info,
+                .infoframe .hate_info{
+                    display: inline-flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+            </style>
+            <style>
+                .infoframe .pin{
+                    overflow-x: auto;
+                }
+                .infoframe .pin::-webkit-scrollbar{
+                    display: none;
+                }
+                .infoframe table{
+                    height: inherit;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .infoframe thead{
+                    background-color: #fbeebb;
+                }
+                .infoframe tbody tr:nth-child(odd){
+                    background-color: #fcfcdd;
+                }
+                .infoframe tbody tr:nth-child(even){
+                    background-color: #ffe;
+                }
+                .infoframe img.icon{
+                    width: 30px;
+                }
+                .infoframe img.hasChanged{
+                    cursor: pointer;
+                    background-color: pink;
+                }
+                .infoframe .ingredient{
+                    display: inline-block;
+                }
+                .infoframe [score='4']{
+                    color: pink;
+                }
+                .infoframe [score='3']{
+                    color: orange;
+                }
+                .infoframe [score='2']{
+                    color: green;
+                }
+                .infoframe [score='1']{
+                    color: purple;
+                }
+                .infoframe [score='0']{
+                    color: black;
+                }
+
+                .infoframe tbody{
+                    display: block;
+                    height: auto;
+                }
+                .infoframe thead,
+                .infoframe tbody tr{
+                    table-layout: fixed;
+                    display: table;
+                    width: 100%;
+                }
+                .infoframe tbody tr th.ingredients img[key=添加]:hover{
+                    background-color: rgba(0, 0, 0, 0.3);
+                }
+                .infoframe tbody .tag{
+                    line-height: 200%;
+                }
+            </style>
+        </div>
+    </div>
+    <div class="floatWindow">
+        <div class="inventory">
+            <div class="item"></div>
+        </div>
+        <style>
+            .floatWindow{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.3);
+
+                /* display: flex; */
+                display: none;
+                align-items: center;
+                justify-content: center;
+            }
+            .floatWindow > .inventory{
+                width: 60%;
+                background-color: burlywood;
+                border: 5px solid brown;
+                border-radius: 10px;
+            }
+            .floatWindow .item img.icon{
+                width: 50px;
+            }
+            .floatWindow .item img.icon:hover{
+                background-color: rgba(0, 0, 0, 0.3);
+            }
+        </style>
+        <script>
+            //浮窗物品栏点击事件
+            document.querySelector('.floatWindow').addEventListener('click',(event)=>{
+                let target = event.currentTarget; // 唤起元素
+                if (!target instanceof Element) {
+                    return;
+                }
+                let srcElement = event.srcElement; // 受击元素
+                if (target == event.srcElement) {
+                    //退出浮窗
+                    console.log('closed')
+                } else {
+                    //更改配料时修改匹配标签(多个配料无法生效)
+                    const th_ingredients_node = caller_element.parentElement;
+                    const tr_node = caller_element.parentElement.parentElement
+                    const th_tags_node = tr_node.querySelector('th.tags');
+                    const exist_tags = [];
+                    //清除所有附加标签
+                    [...th_tags_node.childNodes].forEach((tag_node)=>{
+                        if (tag_node.classList.contains('add')) {
+                            tag_node.remove()
+                            return;
+                        }
+                        exist_tags.push(tag_node.innerText);
+                    })
+
+                    //料理增删
+                    if (srcElement.getAttribute('key') === '清空') {
+                        //清空配料
+                        //加号不能自删 
+                        if (caller_element.getAttribute('key') !== '添加') {
+                            if (caller_element.parentElement.querySelectorAll('[key=添加]').length == 0) {
+                                //创建添加节点
+                                const add_node = document.createElement('img');
+                                add_node.classList.add('icon');
+                                add_node.src = './img/plus.png'
+                                add_node.setAttribute('title', '添加');
+                                add_node.setAttribute('key', '添加');
+                                //添加增加料理事件
+                                add_node.addEventListener('click', (event)=>{
+                                    const float_node = document.querySelector('.floatWindow')
+                                    float_node.style = 'display:flex;'
+                                    caller_element = add_node;
+                                })
+                                caller_element.parentElement.appendChild(add_node);
+                            }
+                            caller_element.remove();
+                        }
+                    } else if (srcElement.classList.contains('icon')) {
+                        //添加或修改配料
+                        const ingredient_title = srcElement.getAttribute('title');
+                        const ingredient_name = srcElement.getAttribute('key');
+                        if (!caller_element.classList.contains('hasChanged')) {
+                            if (caller_element.parentElement.childElementCount < 5) {
+                                //copy添加节点,事件不复用只能再写一个...
+                                const add_node = caller_element.cloneNode(true);
+                                add_node.addEventListener('click', (event)=>{
+                                    const float_node = document.querySelector('.floatWindow')
+                                    float_node.style = 'display:flex;'
+                                    caller_element = add_node;
+                                })
+                                caller_element.parentElement.appendChild(add_node);
+                            }
+                            caller_element.classList.add('hasChanged');
+                        }
+                        caller_element.setAttribute('title', ingredient_title);
+                        caller_element.setAttribute('key', ingredient_name);
+                        caller_element.src = `./img/ingredients/${ingredient_name.replace(/【.*?】/, '')}.png`
+                    }
+                    
+                    //重新生成所有标签
+                    const hasChanged_nodes = [...th_ingredients_node.querySelectorAll('img.hasChanged')];
+                    hasChanged_nodes.forEach((hasChanged_node)=>{
+                        const ingredient_name = hasChanged_node.getAttribute('key');
+                        if (ingredient_name !== '清空') {
+                            const ingredient = searchIngredientByName(ingredient_name);
+                            const char_name = document.querySelector('.infoframe > h2.name').innerText;
+                            const char = searchCharByName(char_name);
+                            const ingredient_tags = ingredient.features.split('、');
+                            const food_name = tr_node.getAttribute('key');
+                            const food = searchRecipeByName(food_name);
+
+                            for (let i = 0; i < ingredient_tags.length; i++) {
+                                const ingredient_tag = ingredient_tags[i];
+                                //去重
+                                if (exist_tags.includes(ingredient_tag)) {
+                                    continue;
+                                }
+                                exist_tags.push(ingredient_tag);
+                                const add_tag_node = document.createElement('span');
+                                add_tag_node.classList.add('tag', 'add');
+                                add_tag_node.innerText = ingredient_tag;
+                                //黑暗料理
+                                if (food.tags_N.includes(ingredient_tag)) {
+                                    add_tag_node.classList.add('dark');
+                                    th_tags_node.appendChild(add_tag_node);
+                                    break
+                                }
+                                //分类
+                                if (char.like_tags.includes(ingredient_tag)) {
+                                    add_tag_node.classList.add('like');
+                                    th_tags_node.appendChild(add_tag_node);
+                                } else if (char.hate_tags.includes(ingredient_tag)) {
+                                    add_tag_node.classList.add('hate');
+                                    th_tags_node.appendChild(add_tag_node);
+                                }
+                            }
+                        }
+                    })
+                    //重新计分
+                    let score = 0;
+                    th_tags_node.childNodes.forEach((tag_node)=>{
+                        if (tag_node.classList.contains('like')) {
+                            score++;
+                        } else if (tag_node.classList.contains('hate')) {
+                            score--;
+                        } else if (tag_node.classList.contains('dark')) {
+                            score = 0;
+                        }
+                    })
+                    score < 0 && (score = 0), score > 4 && (score = 4);
+                    tr_node.querySelector('th.name').setAttribute('score', score);
+                }
+                target.style = 'display: none;'
+            })
+        </script>
+    </div>
+</body>
+<script>
+    let caller_element;
+    const info = {
+        'recipes':[
+            {
+                "name": "黑暗物质",
+                "tool": "任意",
+                "price": "1",
+                "ingredients": "任意",
+                "tags_P": [
+                    "黑暗物质"
+                ],
+                "tags_N": [],
+                "dlc": "0"
+            }
+        ],
+        'character':[
+            {
+                "name": "莉格露",
+                "like_tags": [
+                    "肉",
+                    "甜",
+                    "生",
+                    "猎奇"
+                ],
+                "hate_tags": [
+                    "素",
+                    "清淡",
+                    "凉爽"
+                ],
+                "drink_tags": [
+                    "低酒精",
+                    "可加冰"
+                ],
+                "price": "200-400",
+                "place": "妖怪兽道、魔法森林、太阳花田",
+                "dlc": "0"
+            }
+        ],
+        'ingredients':[
+            {
+                "name": "冰块",
+                "type": "其他",
+                "features": "凉爽",
+                "from": "红魔馆河流处，神灵庙北部冰块处采集，香霖堂处（概率）购买",
+                "dlc": "0"
+            }
+        ],
+        'food_pin_list':{} // {'莉格露':[{'name':'蜜汁叉烧','ingredients':[]}]}
+    }
+    function initLocalStorage() {
+        let food_pin_list = localStorage.getItem('food_pin_list');
+        if (food_pin_list) {
+            info['food_pin_list'] = JSON.parse(food_pin_list);
+        }
+    }
+    function saveLocalStorage() {
+        console.log('正在保存');
+        const food_pin_list = info.food_pin_list
+        const name = document.querySelector('.infoframe > h2.name').innerText;
+        const pin_tbody_node = document.querySelector('.infoframe .pin table tbody');
+        if (pin_tbody_node.childElementCount == 0) {
+            //收藏栏无数据删除
+            delete food_pin_list[name];
+            console.log('未保存任何数据');
+        } else {
+            //收藏栏有数据逐一存储名字和增加的配料
+            food_pin_list[name] = [];
+            for (const pin_node of pin_tbody_node.childNodes) {
+                const ingredients = [];
+                let food = pin_node.getAttribute('key');
+                const ingredients_node = pin_node.childNodes.item(3);
+                for (const ingredient_node of ingredients_node.childNodes) {
+                    if (ingredient_node.classList.contains('hasChanged')) {
+                        let ingredient = ingredient_node.getAttribute('key');
+                        ingredients.push(ingredient);
+                    }
+                }
+                food_pin_list[name].push({'name':food, 'ingredients':ingredients});
+            }
+        }
+        localStorage.setItem('food_pin_list', JSON.stringify(food_pin_list))
+    }
+    async function trans_json() {
+        await fetch("./json/recipes2.json")
+            .then((response) => response.json())
+            .then((data) => {
+                info['recipes'] = data
+            });
+        await fetch("./json/character.json")
+            .then((response) => response.json())
+            .then((data) => {
+                info['character'] = data.map((char)=>{
+                    //匹配群图鉴
+                    if (typeof char.like_tags == 'string') {
+                        char.like_tags = char.like_tags.split('、')
+                    }
+                    if (typeof char.hate_tags == 'string') {
+                        char.hate_tags = char.hate_tags.split('、')
+                    }
+                    if (typeof char.drink_tags == 'string') {
+                        char.drink_tags = char.drink_tags.split('、')
+                    }
+                    return char
+                })
+            });
+        await fetch("./json/ingredients.json")
+            .then((response) => response.json())
+            .then((data) => {
+                info['ingredients'] = data
+            });
+    }
+    function searchRecipeByName(name) {
+        const recipes = info['recipes'];
+        for (let i = 0; i < recipes.length; i++) {
+            const recipe = recipes[i];
+            if (recipe.name == name) {
+                return recipe;
+            }
+        }
+    }
+    function searchCharByName(name) {
+        const char_list = info['character'];
+        let char_object;
+        for (let i = 0; i < char_list.length; i++) {
+            const char = char_list[i];
+            if (char.name == name) {
+                char_object = char;
+            }
+        }
+        return char_object;
+    }
+    function searchIngredientByName(name) {
+        const ingredients = info['ingredients'];
+        for (let i = 0; i < ingredients.length; i++) {
+            const ingredient = ingredients[i];
+            if (ingredient.name == name) {
+                return ingredient;
+            }
+        }
+    }
+    async function load_char() {
+        //加载角色列表
+        const char_list = info['character'];
+        const char_list_node = document.querySelector('div.frame.charframe div.char_list');
+        const interpret = {'妖怪兽道':'ygsd','人间之里':'rjzl','博丽神社':'blss','红魔馆':'hmg','迷途竹林':'mtzl','魔法森林':'mfsl','妖怪之山':'ygzs','旧地狱':'jdy','地灵殿':'dld','命莲寺':'mls','神灵庙':'slm','太阳花田':'tyht','辉针城':'hzc','魔界':'mj','月之都':'yzd'};
+        char_list_node.innerHTML = '';
+            
+        let p = 0;
+        let row_node = document.createElement('div');
+        while (p < char_list.length) {
+            const char = char_list[p];
+            const char_node = document.createElement('div');
+            char_node.classList.add('char');
+            char_node.setAttribute('key', char.name);
+            //角色头像
+            const head_node = document.createElement('img');
+            head_node.classList.add('head');
+            head_node.src = `./img/character/${char.name.replace(/【.*?】/, '')}.png`;
+            char_node.appendChild(head_node);
+            //角色名
+            const name_node = document.createElement('h4');
+            name_node.textContent = char.name;
+            char_node.appendChild(name_node);
+            //显示保存的料理数
+            const reserve_count = Object.hasOwnProperty.call(info.food_pin_list, char.name)?info.food_pin_list[char.name].length.toString():'';
+            const reserve_count_node = document.createElement('h4');
+            reserve_count_node.textContent = reserve_count;
+            reserve_count_node.classList.add('rc')
+            char_node.appendChild(reserve_count_node);
+            //加载保存的料理
+            const reserve_node = document.createElement('div');
+            reserve_node.classList.add('reserve_len');
+            char_node.appendChild(reserve_node);
+            //角色位置属性
+            let places = char.place.split('、');
+            places.forEach((value)=>{
+                char_node.classList.add(interpret[value]);
+            })
+            char_list_node.appendChild(char_node);
+            p++;
+        }
+    }
+    class MatchRecipe{
+        constructor(characters, recipes){
+            this.characters = characters;
+            this.recipes = recipes;
+            this.results = [];
+        }
+        findChar(name){
+            //清理原始数据
+            this.results = [];
+            //通过名字查找角色数据
+            let recipes = info['recipes'];// this.recipes
+            let characters = info['character'];// this.characters
+            let character;
+            for (let i = 0; i < characters.length; i++) {
+                const element = characters[i];
+                if (element?.name == name) {
+                    character = element;
+                    break;
+                }
+            }
+            if (!character) {
+                throw Error('not find character');
+            }
+            //加载角色数据
+            let id = 0;
+            let like_tags = character['like_tags'];
+            let hate_tags = character['hate_tags'];
+            let chosen = this.results;//[{name: '素', chosen: Array(2)},{name: '家常', chosen: Array(2)}]
+            recipes.forEach((recipe)=>{
+                let food_feature = recipe.tags_P;
+                let selected = {'name':'', 'score':0, 'satisfy':[], 'disatisfy':[], 'data':undefined};
+                let flag = false;
+                //筛选匹配的喜好标签
+                for (let i = 0; i < like_tags.length; i++) {
+                    const like_tag = like_tags[i];
+                    if (food_feature.includes(like_tag)) {
+                        selected.satisfy.push(like_tag);
+                        flag = true;
+                    }
+                }
+                //包含喜好标签会保留并筛选厌恶标签
+                if (flag) {
+                    for (let i = 0; i < hate_tags.length; i++) {
+                        const hate_tag = hate_tags[i];
+                        if (food_feature.includes(hate_tag)) {
+                            selected.disatisfy.push(hate_tag);
+                        }
+                    }
+                    selected.id = id++;
+                    selected.name = recipe.name;//[1,0,1,0,0]
+                    selected.data = recipe;
+                    selected.score = selected.satisfy.length - selected.disatisfy.length;
+                    chosen.push(selected);
+                }
+            })
+            return chosen;
+        }
+        sort(compareFunc){
+            this.results.sort(compareFunc);
+            return this.results;
+        }
+        sortByScore(invert = false){
+            function compareScore(a, b) {
+                let score = (a.score - b.score) * (invert?-1:1);
+                if (score < 0) {
+                    return 1;
+                } else if (score === 0) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            }
+            return this.sort(compareScore);
+        }
+        sortByDefault(invert = false){
+            function compareDefault(a, b) {
+                let score = invert?-1:1;
+                if (a.id < b.id) {
+                    return score;
+                } else if (a.id > b.id) {
+                    return -score;
+                } else {
+                    return 0;
+                }
+            }
+            return this.sort(compareDefault);
+        }
+        sortByTools(invert = false){
+            function compareTools(a, b) {
+                let score = invert?-1:1;
+                if (a.data.tool < b.data.tool) {
+                    return score;
+                } else if (a.data.tool > b.data.tool) {
+                    return -score;
+                } else {
+                    return 0;
+                }
+            }
+            return this.sort(compareTools);
+        }
+    }
+    //创建浮窗物品栏
+    function load_ivnentory() {
+        let ingredients = info['ingredients'];
+        const ingredients_node = document.querySelector('.floatWindow > .inventory > .item');
+        //清空
+        const ingredient_node = document.createElement('img');
+        ingredient_node.setAttribute('title', '清空');
+        ingredient_node.setAttribute('key', '清空');
+        ingredient_node.classList.add('icon');
+        ingredient_node.src = './img/clean.png';
+        ingredients_node.appendChild(ingredient_node);
+        //材料
+        ingredients.forEach((ingredient)=>{
+            const {name, features} = ingredient;
+            const ingredient_node = document.createElement('img');
+            ingredient_node.setAttribute('title', `${name}(${features})`);
+            ingredient_node.setAttribute('key', name);
+            ingredient_node.classList.add('icon');
+            ingredient_node.src = `./img/ingredients/${name.replace(/【.*?】/, '')}.png`;
+            ingredients_node.appendChild(ingredient_node);
+        })
+    }
+
+    (async ()=>{
+        // getCookie()
+        initLocalStorage();
+        await trans_json();
+        await load_char();
+        load_ivnentory();
+        let mr = new MatchRecipe(info.character, info.recipes);
+        function updateFoodFrame(match_info) {
+            //匹配料理
+            const match_node = document.querySelector('.foodframe table.match > tbody');
+            match_node.innerHTML = '';
+
+            match_info.forEach((value)=>{
+                const like_tags = value['satisfy'];
+                const hate_tags = value['disatisfy'];
+                const food_name = value['name'];
+                const food_data = value['data'];
+
+                let score = value['score'];
+                score < 0 && (score = 0), score > 4 && (score = 4);
+                // const score_color = ['black','purple','green','orange','pink'][score];
+                const score_color = score;
+
+                //tr
+                const food_node = document.createElement('tr');
+                food_node.classList.add('item');
+                food_node.setAttribute('key',food_name);
+                match_node.appendChild(food_node);
+
+                //food_img
+                const food_img_node = document.createElement('img');
+                food_img_node.src = `./img/recipes/${food_name.replace(/【.*?】/, '')}.png`;
+                food_img_node.classList.add('icon')
+                food_img_node.setAttribute('title', food_name)
+                const food_img_th_node = document.createElement('th')
+                food_img_th_node.classList.add('img')
+                food_img_th_node.appendChild(food_img_node)
+                food_node.appendChild(food_img_th_node);
+                
+                //food_name
+                const food_name_node = document.createElement('th');
+                food_name_node.innerText = food_name;
+                food_name_node.setAttribute('score', score_color)
+                food_name_node.classList.add('name')
+                food_node.appendChild(food_name_node);
+                
+                //food_tool
+                const food_tool_node = document.createElement('img');
+                food_tool_node.src = `./img/tools/${food_data['tool']}.png`;
+                food_tool_node.classList.add('icon')
+                food_tool_node.setAttribute('title', food_data['tool'])
+                const food_tool_th_node = document.createElement('th')
+                food_tool_th_node.appendChild(food_tool_node);
+                food_tool_th_node.classList.add('tool')
+                food_node.appendChild(food_tool_th_node);
+                
+                //food_ingredient
+                const food_ingredients_node = document.createElement('th');
+                food_ingredients_node.classList.add('ingredients')
+                let ingredients = food_data['ingredients'].split('、')
+                ingredients.forEach((value)=>{
+                    const food_ingredient_node = document.createElement('img');
+                    food_ingredient_node.src = `./img/ingredients/${value}.png`;
+                    food_ingredient_node.classList.add('icon')
+                    food_ingredient_node.setAttribute('key', value)
+                    food_ingredient_node.setAttribute('title', value)
+                    food_ingredients_node.appendChild(food_ingredient_node);
+                })
+                food_node.appendChild(food_ingredients_node);
+
+                //food_tags黑紫绿橙粉01234
+                const food_tag_list_node = document.createElement('th');
+                food_tag_list_node.classList.add('tags')
+                for (let i = 0; i < like_tags.length; i++) {
+                    const food_tag_node = document.createElement('span');
+                    food_tag_node.classList.add('tag','like');
+                    food_tag_node.innerHTML = like_tags[i];
+                    food_tag_list_node.appendChild(food_tag_node);
+                }
+                for (let i = 0; i < hate_tags.length; i++) {
+                    const food_tag_node = document.createElement('span');
+                    food_tag_node.classList.add('tag','hate');
+                    food_tag_node.innerHTML = hate_tags[i];
+                    food_tag_list_node.appendChild(food_tag_node);
+                }
+                food_node.appendChild(food_tag_list_node);
+            })
+
+            //标定食谱收藏
+            const star_tbody_node = document.querySelector('.infoframe .pin table tbody');
+            document.querySelectorAll('.foodframe tbody tr').forEach((element)=>{
+                element.addEventListener('click', (event)=>{
+                    const element = event.currentTarget;
+                    if (element.classList.contains('active')) {
+                        console.log('取消收藏')
+                        star_tbody_node.removeChild(star_tbody_node.querySelector(`tr[key=${element.getAttribute('key')}].item`))
+                        element.classList.remove('active');
+                    } else {
+                        console.log('设置收藏')
+                        const pin_node = element.cloneNode(true);
+                        const ingredient_node = pin_node.querySelector('th.ingredients');
+                        if (ingredient_node.childElementCount < 5) {
+                            const add_node = document.createElement('img');
+                            add_node.classList.add('icon');
+                            add_node.src = './img/plus.png'
+                            add_node.setAttribute('title', '添加');
+                            add_node.setAttribute('key', '添加');
+                            //添加增加料理事件
+                            add_node.addEventListener('click', (event)=>{
+                                const float_node = document.querySelector('.floatWindow')
+                                float_node.style = 'display:flex;'
+                                caller_element = add_node;
+                            })
+                            ingredient_node.appendChild(add_node);
+                        }
+                        star_tbody_node.appendChild(pin_node);
+                        element.classList.add('active');
+                    }
+                    //修改保存的料理数
+                    const char_name = document.querySelector('.infoframe > h2.name').innerText;
+                    const char_node = document.querySelector(`div[key=${char_name}].char`);
+                    const reserve_count = star_tbody_node.childElementCount?star_tbody_node.childElementCount.toString():'';
+                    const reserve_count_node = char_node.querySelector('h4.rc');
+                    reserve_count_node.textContent = reserve_count;
+                    char_node.appendChild(reserve_count_node);
+                })
+            })
+        }
+        //加载场景标签
+        document.querySelectorAll('div.scene_list > .scene').forEach((element)=>{
+            element.addEventListener('click',()=>{
+                const peer = element.parentElement.children;
+                for (let i = 0; i < peer.length; i++) {
+                    const element = peer.item(i);
+                    if (element.classList.contains('active')) {
+                        element.classList.remove('active');
+                    }
+                }
+                element.classList.add('active');
+
+                let place = element.getAttribute('key');
+                document.querySelectorAll('div.char').forEach((element)=>{
+                    if (element.classList.contains('hidden')) {
+                        element.classList.remove('hidden')
+                    }
+                    if (!element.classList.contains(place)) {
+                        element.classList.add('hidden')
+                    }
+                });
+            })
+        })
+        //id排序
+        document.querySelector('.foodframe thead th.id').addEventListener('click', (event)=>{
+            const element = event.currentTarget;
+            if (element.classList.contains('active')) {
+                element.classList.remove('active');
+                updateFoodFrame(mr.sortByDefault());
+            } else {
+                element.classList.add('active');
+                updateFoodFrame(mr.sortByDefault(true));
+            }
+        })
+        //tool排序
+        document.querySelector('.foodframe thead th.tool').addEventListener('click', (event)=>{
+            const element = event.currentTarget;
+            if (element.classList.contains('active')) {
+                element.classList.remove('active');
+                updateFoodFrame(mr.sortByTools());
+            } else {
+                element.classList.add('active');
+                updateFoodFrame(mr.sortByTools(true));
+            }
+        })
+        //tag排序
+        document.querySelector('.foodframe thead th.match_tag').addEventListener('click', ()=>{
+            const element = event.currentTarget;
+            if (element.classList.contains('active')) {
+                element.classList.remove('active');
+                updateFoodFrame(mr.sortByScore(true));
+            } else {
+                element.classList.add('active');
+                updateFoodFrame(mr.sortByScore());
+            }
+        })
+        //点击后加载角色标签
+        const infoframe_node = document.querySelector('div.frame.infoframe');
+        document.querySelectorAll('div.char').forEach((element)=>{
+            element.addEventListener('click',(event)=>{
+                
+                //保存收藏栏
+                saveLocalStorage()
+
+                //载入角色信息
+                let key = element.getAttribute('key')
+                let char = searchCharByName(key);
+                if (!char) return;
+                //name
+                infoframe_node.querySelector('.name').innerHTML = char.name;
+                //img
+                infoframe_node.querySelector('img').src = `./img/character/${char.name.replace(/【.*?】/, '')}.png`;
+                //price
+                infoframe_node.querySelector('.price').innerHTML = char.price + '$';
+                //like_tags
+                const char_like = char['like_tags']
+                const like_tags_node = infoframe_node.querySelector('.like_info');
+                like_tags_node.innerHTML = '';
+                for (let i = 0; i < char_like.length; i++) {
+                    const tag_node = document.createElement('div');
+                    tag_node.classList.add('tag', 'like');
+                    tag_node.innerHTML = char_like[i];
+                    like_tags_node.appendChild(tag_node);
+                }
+                //hate_tags
+                const char_hate = char['hate_tags']
+                const hate_tags_node = infoframe_node.querySelector('.hate_info');
+                hate_tags_node.innerHTML = '';
+                for (let i = 0; i < char_hate.length; i++) {
+                    const tag_node = document.createElement('div');
+                    tag_node.classList.add('tag', 'hate');
+                    tag_node.innerHTML = char_hate[i];
+                    hate_tags_node.appendChild(tag_node);
+                }
+
+                let match_info = mr.findChar(char.name);
+                updateFoodFrame(match_info);
+
+                //初始化thead
+                document.querySelectorAll('.foodframe thead th').forEach((element)=>{
+                    if (element.classList.contains('active')) {
+                        element.classList.remove('active')
+                    }
+                })
+                document.querySelector('.foodframe thead th.match_tag').click()
+
+                //清空收藏栏
+                const star_tbody_node = document.querySelector('.infoframe .pin table tbody');
+                star_tbody_node.innerHTML = '';
+                
+                //载入收藏栏
+                const food_pin_list = info.food_pin_list
+                if (Object.hasOwnProperty.call(food_pin_list, char.name)) {
+                    food_pin_list[char.name].forEach((star)=>{
+                        const name = star.name;
+                        const ingredients = star.ingredients;
+
+                        //根据名字模仿点击事件
+                        const match_node = document.querySelector('.foodframe table.match > tbody');
+                        match_node.querySelector(`tr[key=${name}]`).click();
+
+                        //加载配料
+                        const tr_node = star_tbody_node.querySelector(`tr[key=${name}]`);
+                        const th_ingredients_node = tr_node.querySelector('th.ingredients');
+                        ingredients.forEach((name)=>{
+                            const img_ingredient_node = document.createElement('img');
+                            const ingredient_data = searchIngredientByName(name);
+                            img_ingredient_node.classList.add('icon','hasChanged');
+                            img_ingredient_node.src = `./img/ingredients/${name.replace(/【.*?】/, '')}.png`;
+                            img_ingredient_node.setAttribute('key', name);
+                            img_ingredient_node.setAttribute('title', `${name}(${ingredient_data.features})`);
+                            img_ingredient_node.addEventListener('click', (event)=>{
+                                const float_node = document.querySelector('.floatWindow')
+                                float_node.style = 'display:flex;'
+                                caller_element = img_ingredient_node;
+                            })
+                            th_ingredients_node.appendChild(img_ingredient_node);
+
+                            //更改配料时修改匹配标签
+                            const th_tags_node = tr_node.querySelector('th.tags');
+                            const exist_tags = [];
+                            th_tags_node.childNodes.forEach((tag_node)=>{
+                                exist_tags.push(tag_node.innerText);
+                            })
+                            const ingredient_tags = ingredient_data.features.split('、');
+                            const food_name = tr_node.getAttribute('key');
+                            const food = searchRecipeByName(food_name);
+
+                            for (let i = 0; i < ingredient_tags.length; i++) {
+                                const ingredient_tag = ingredient_tags[i];
+                                //去重
+                                if (exist_tags.includes(ingredient_tag)) {
+                                    continue;
+                                }
+                                const add_tag_node = document.createElement('span');
+                                add_tag_node.classList.add('tag', 'add');
+                                add_tag_node.innerText = ingredient_tag;
+                                //黑暗料理
+                                if (food.tags_N.includes(ingredient_tag)) {
+                                    add_tag_node.classList.add('dark');
+                                    th_tags_node.appendChild(add_tag_node);
+                                    break
+                                }
+                                //分类
+                                if (char.like_tags.includes(ingredient_tag)) {
+                                    add_tag_node.classList.add('like');
+                                    th_tags_node.appendChild(add_tag_node);
+                                } else if (char.hate_tags.includes(ingredient_tag)) {
+                                    add_tag_node.classList.add('hate');
+                                    th_tags_node.appendChild(add_tag_node);
+                                }
+                            }
+                        })
+
+                        //重新计分
+                        const th_tags_node = tr_node.querySelector('th.tags');
+                        let score = 0;
+                        th_tags_node.childNodes.forEach((tag_node)=>{
+                            if (tag_node.classList.contains('like')) {
+                                score++;
+                            } else if (tag_node.classList.contains('hate')) {
+                                score--;
+                            } else if (tag_node.classList.contains('dark')) {
+                                score = 0;
+                            }
+                        })
+                        score < 0 && (score = 0), score > 4 && (score = 4);
+                        tr_node.querySelector('th.name').setAttribute('score', score);
+                    });
+                }
+            })
+        })
+        document.querySelector("body > div.container > div.frame.charframe > div > div > div:nth-child(1)").click()
+    })()
+    // window.addEventListener('beforeunload', (event)=>{
+    //     event.preventDefault();
+    //     //保存收藏栏
+    //     saveLocalStorage();
+    // })
+</script>
+</html>
