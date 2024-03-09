@@ -74,6 +74,8 @@
                     <div class="scene" key="slm">神灵庙</div>
                     <div class="scene" key="tyht">太阳花田</div>
                     <div class="scene" key="hzc">辉针城</div>
+                    <div class="scene" key="mj">魔界</div>
+                    <div class="scene" key="yzd">月之都</div>
                 </div>
             </zob-horizon>
             <style>
@@ -769,7 +771,19 @@
         await fetch("./json/character.json")
             .then((response) => response.json())
             .then((data) => {
-                info['character'] = data
+                info['character'] = data.map((char)=>{
+                    //匹配群图鉴
+                    if (typeof char.like_tags == 'string') {
+                        char.like_tags = char.like_tags.split('、')
+                    }
+                    if (typeof char.hate_tags == 'string') {
+                        char.hate_tags = char.hate_tags.split('、')
+                    }
+                    if (typeof char.drink_tags == 'string') {
+                        char.drink_tags = char.drink_tags.split('、')
+                    }
+                    return char
+                })
             });
         await fetch("./json/ingredients.json")
             .then((response) => response.json())
@@ -810,7 +824,7 @@
         //加载角色列表
         const char_list = info['character'];
         const char_list_node = document.querySelector('div.frame.charframe div.char_list');
-        const interpret = {'妖怪兽道':'ygsd','人间之里':'rjzl','博丽神社':'blss','红魔馆':'hmg','迷途竹林':'mtzl','魔法森林':'mfsl','妖怪之山':'ygzs','旧地狱':'jdy','地灵殿':'dld','命莲寺':'mls','神灵庙':'slm','太阳花田':'tyht','辉针城':'hzc'};
+        const interpret = {'妖怪兽道':'ygsd','人间之里':'rjzl','博丽神社':'blss','红魔馆':'hmg','迷途竹林':'mtzl','魔法森林':'mfsl','妖怪之山':'ygzs','旧地狱':'jdy','地灵殿':'dld','命莲寺':'mls','神灵庙':'slm','太阳花田':'tyht','辉针城':'hzc','魔界':'mj','月之都':'yzd'};
         char_list_node.innerHTML = '';
             
         let p = 0;

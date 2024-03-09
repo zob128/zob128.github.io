@@ -383,5 +383,33 @@
         "features": "梦幻、适合拍照",
         "from": "太阳花田西部、中部鲜花处采集",
         "dlc": "4"
+    },
+    {
+        "name": "可可豆【DLC5】",
+        "type": "其他",
+        "features": "甜、不可思议",
+        "from": "-",
+        "dlc": "5"
+    },
+    {
+        "name": "西蓝花【DLC5】",
+        "type": "蔬菜",
+        "features": "素、家常",
+        "from": "-",
+        "dlc": "5"
+    },
+    {
+        "name": "薛荔【DLC5】",
+        "type": "其他",
+        "features": "凉爽、梦幻",
+        "from": "-",
+        "dlc": "5"
+    },
+    {
+        "name": "银耳【DLC5】",
+        "type": "其他",
+        "features": "菌类、清淡",
+        "from": "-",
+        "dlc": "5"
     }
 ]
